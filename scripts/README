@@ -1,0 +1,10 @@
+jquery.min.js: minimal jQuery packet
+jquery.reveal.js: for modal window (on click)
+jquery.subwayMap-0.5.0.js: old map renderer, obsolete (replaced by mapRenderer.js)
+jquery-ui-1.8.16.custom.min.js: for dialog box (on hover)
+lineImportance.py: python script that gets the basic XML from the database and updates the row with the renderableXML
+mapRenderer.js: new renderer that draws the map from renderableXML
+                constructs Nodes, Lines, and Edges from the xml DOM and iterate through them to render the map
+searchBox.cgi: obsolete cgi script for handling queries entered into the search box
+searchBox.php: the php script called by the javascript function to fetch the renderable xml string
+xmlParser_mapDisplay.js: obsolete js parser created to work with jquery.subwaymap

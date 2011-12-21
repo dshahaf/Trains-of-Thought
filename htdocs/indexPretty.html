@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="twoColLiqRtHdr.css" rel="stylesheet" type="text/css" />
+<link href="jquery-ui-1.8.16.custom.css" rel="stylesheet" type="text/css" />
+<link href="reveal.css" rel="stylesheet" type="text/css" />
+<link href="nyt_styles.css" rel="stylesheet" type="text/css" />
+<link href="nyt_homepage_styles.css" rel="stylesheet" type="text/css" />
+
+<!-- styles needed by jScrollPane -->
+<link type="text/css" href="jquery.jscrollpane.css" rel="stylesheet" media="all" />
+
+<script type="text/javascript" src="../scripts/jquery.min.js"></script>
+<script type="text/javascript" src="../scripts/jquery-ui-1.8.16.custom.min.js"></script>
+<script type="text/javascript" src="../scripts/jquery.subwayMap-0.5.0.js"></script>
+<script type="text/javascript" src="../scripts/xmlParser_mapDisplay.js"></script>
+
+<script type="text/javascript" src="../scripts/jquery.reveal.js"></script>
+<script type="text/javascript" src="../scripts/mapRenderer.js"></script>
+
+
+<!-- the mousewheel plugin - optional to provide mousewheel support -->
+<script type="text/javascript" src="../scripts/jquery.mousewheel.js"></script>
+
+<!-- the jScrollPane script -->
+<script type="text/javascript" src="../scripts/jquery.jscrollpane.min.js"></script>
+
+		<!-- script type="text/javascript" id="sourcecode">
+			$(function()
+			{
+				$('.sidebox').jScrollPane(
+					{
+					    showArrows: true,
+						autoReinitialise: true
+					}
+				);
+			});
+		</script -->
+
+
+	<script type="text/javascript">
+	function getXML() {
+		var str = document.getElementById("topic").value;
+		if (str.length==0) { 
+			//////////////mod line below////////////////////
+	  		//document.getElementById("txtHint").innerHTML="";
+	  		////////////////////////////////////////////////
+	  		return;
+	  	}
+		if (window.XMLHttpRequest)  {// code for IE7+, Firefox, Chrome, Opera, Safari
+	  		xmlhttp=new XMLHttpRequest();
+	  	}
+		else {// code for IE6, IE5
+	  		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  	}
+		xmlhttp.onreadystatechange=function() {
+	  		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+	  		//alert("miracle!");
+	  			////////////////////////mod line below///////////////////////////
+	    		var xml=xmlhttp.responseText;
+	    		
+	    		if (window.console && window.console.log)
+            	window.console.log(xml);
+	    		
+	    		
+			if (window.DOMParser)
+			  {
+			  var p=new DOMParser();
+			  var xmlDoc=p.parseFromString(xml,"text/xml");
+			  }
+			else // Internet Explorer
+			  {
+			  var xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
+			  xmlDoc.async="false";
+			  xmlDoc.loadXML(xml); 
+			  }
+			  
+			  //var nodes = xmlDoc.getElementsByTagName("node");
+			  
+			  //$("p:first").text( "number of nodes: " + nodes.length );
+	    		
+	    		var results = parser(xmlDoc);
+	    		var Nodes = results.Nodes, Edges = results.Edges, Lines = results.Lines;
+	    		var lineWidth = 6, strokeWidth = 3;
+	    		render(Nodes, Edges, Lines, "mapCanvas", 'drag', lineWidth, strokeWidth);
+	    		////////////////////////////////////////////////////////////////
+	    	}
+	  	}
+		xmlhttp.open("GET","../scripts/searchBox.php?q="+str,true);
+		
+		xmlhttp.setRequestHeader('Content-Type',  "text/xml");
+		xmlhttp.send();
+	}
+</script>  
+
+
+<title>Trains of Thought</title>
+
+
+<!--[if lte IE 7]>
+<style>
+.content { margin-right: -1px; } /* this 1px negative margin can be placed on any of the columns in this layout with the same corrective effect. */
+ul.nav a { zoom: 1; }  /* the zoom property gives IE the hasLayout trigger it needs to correct extra whiltespace between the links */
+</style>
+<![endif]-->
+</head>
+
+<body>
+
+<div class="container">
+  <div class="header">
+  
+    <div class="fltrt"> <!-- search box -->
+      <form name="simple_bar" action="javascript:getXML()">
+        <table width="100%" height="90" border="0" cellpadding="5">
+          <tr>
+            <td>
+              <!-- <input type="hidden" name="dff_view" value="grid"> -->
+			  <div class="loginboxdiv">
+              <input class="loginbox" type="text" id="topic" name="topic" size="500" maxlength="500" placeholder="Type search term here">
+			  </div>
+			  </td>
+			  <td valign=middle>
+              <input type="submit" value="Search" class="sub1" >
+            </td>
+          </tr>
+        </table>
+      </form>
+    <!-- end .fltrt --></div>
+  
+    <a href="#"><img src="logo.gif" alt="Insert Logo Here" name="Insert_logo" width="36%" height="90" id="Insert_logo" style="background: #8090AB; display:block;" /> </a> 
+    
+  <!-- end .header --></div>
+    
+  <div class="middle">
+  
+  <div class="sidebar2">
+  </div>
+  
+  
+
+  
+    <div class="sidebar1">
+      <div class="side" id="wordList">
+	  <p>
+	    Personalize Search:</p>
+		<div class="sidebox" id="wordListBox"></div>
+      </div>
+      
+      <div class="side" id="articleList">
+		<p>Article List:</p>
+		<div class="sidebox" id="articleListBox"></div>
+      </div>
+      
+      
+      <!-- end .sidebar1 --></div>
+     <br><br> 
+	  
+  <div class="sidebar3">
+  </div>	  
+
+    <div class="map" id="metromap"> <!-- map container -->
+      
+      <div id="drag" style="position: relative;">
+      <canvas id="mapCanvas"> </canvas>
+      
+      </div>
+      
+      <div id="legend"> <!-- legend goes here -->
+      </div>
+    <!-- end .map --></div>
+     
+  <!-- end .middle --></div>
+  <div id="modal_dial"></div>
+
+  <div class="sidebar3">
+  </div>
+
+  <div class="footer">
+<!--     <p>This .footer contains the declaration position:relative; to give Internet Explorer 6 hasLayout for the .footer and cause it to clear correctly. If you're not required to support IE6, you may remove it.</p> -->
+    <!-- end .footer --></div>
+  <!-- end .container --></div>
+
+  
+  
+  	<script type="text/javascript" >
+  	var xmlDoc;
+var xmlloaded = false;
+  	function importXML(xmlfile)
+{
+    try
+    {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", xmlfile, false);
+    }
+    catch (Exception)
+    {
+        var ie = (typeof window.ActiveXObject != 'undefined');
+
+        if (ie)
+        {
+            xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+            xmlDoc.async = false;
+            while(xmlDoc.readyState != 4) {};
+            xmlDoc.load(xmlfile);
+            readXML();
+            xmlloaded = true;
+        }
+        else
+        {
+            xmlDoc = document.implementation.createDocument("", "", null);
+            xmlDoc.onload = readXML;
+            xmlDoc.load(xmlfile);
+            xmlloaded = true;
+        }
+    }
+
+    if (!xmlloaded)
+    {
+        xmlhttp.setRequestHeader('Content-Type', 'text/xml')
+        xmlhttp.send("");
+        xmlDoc = xmlhttp.responseXML;
+        readXML();
+        xmlloaded = true;
+    }
+}
+
+
+function readXML() {
+	
+	var results = parser(xmlDoc);
+	var Nodes = results.Nodes, Edges = results.Edges, Lines = results.Lines;
+	var lineWidth = 6, strokeWidth = 3;
+	render(Nodes, Edges, Lines, "mapCanvas", 'drag', lineWidth, strokeWidth);
+	
+}
+  	
+  	
+  	
+  	
+	
+	//importXML('xmlFromDB.graphml');
+	
+	$(function() {
+		$( "#drag" ).draggable({ containment: [-2000, -300, 400, 600] });
+	});
+  	
+  	  /* $("#tester").position({
+    my:        "left top",
+    at:        "left bottom",
+    of:        $("#mapCanvas"), // or $("#otherdiv)
+    //collision: "fit"
+})
+  		//$(function() {
+		//	$( "#mapCanvas" ).draggable();
+		//});
+		
+		function showDialog(id) {
+			$(id).dialog();
+		}
+
+		//$('#myModal').dialog({ autoOpen: false,  
+		//                       position: [$('#tester').offset().left - 100, $('#tester').offset().top - $(window).scrollTop() - 200] });		
+		
+		
+		
+		$(document).ready(function() {
+		
+			$('#tester').click(function(e) {
+          e.preventDefault();
+	  $('#myModal').dialog('close');
+	  $('#myModal2').reveal();
+     });	
+		
+     $('#tester').mouseenter(function(e) {
+          e.preventDefault();
+     $('#myModal').dialog({ autoOpen: false,  
+		                      position: [$('#tester').offset().left - 100, $('#tester').offset().top - 200],
+		                      resizable: false });	
+     $('#myModal').css({"top": $("#drag").offset().top+400});
+	  $('#myModal').dialog('open');
+     });
+     $('#tester').mouseleave(function(e) {
+          e.preventDefault();
+	  $('#myModal').dialog('close');
+     });
+});		
+		
+		
+		$(function() {
+			$( "#drag" ).draggable();
+		});
+		
+		$("#tester").offset({top: $("#drag").offset().top+100, left: $("#drag").offset().left+200});
+		
+		var p = $("#tester");
+		var position = p.position();
+		$("p:first").text( "left: " + position.left + ", top: " + position.top );
+		//var mapCanvas = document.getElementById("mapCanvas");
+		//var ctx = mapCanvas.getContext('2d');
+		//interChange(1000000, 40, ctx, 100, 110, 3, 6);
+		//drawEdge(0, 0, 100, 0, "green", 8, ctx);
+		//drawEdge(0, 8, 100, 8, "black", 8, ctx);
+		//drawEdge(0, 16, 100, 16, "red", 8, ctx);
+		
+		var tester = document.getElementById("tester");
+		tester.height = 45;
+		tester.width=20;
+		var ctx2 = tester.getContext('2d');
+		interChange(1000000, 20, ctx2, 10, 20, 3, 6); */
+		
+	</script>
+</body>
+</html>
